@@ -4,13 +4,13 @@ Valuation is as much an art as it is science.
 
 Subjectivity will always exist; justify your reasoning.
 
-## Discounted cash flow model
+# Discounted cash flow model
 
-note: this model is made using the <a href="https://site.financialmodelingprep.com/developer/docs/">Financial Modeling Prep api</a>
+note: this model is made using the <a href="https://site.financialmodelingprep.com/developer/docs/">Financial Modeling Prep</a> api.
 
-second note: this is made for learning purposes only and this model still require adjustments.
+second note: this is made for learning purposes only and the model still require adjustments.
 
-# usage:
+## usage:
 
     git clone https://github.com/Fnine99/DCF.git
     
@@ -37,7 +37,7 @@ Here, for DropBox we are estimating an intrinsic value 4% below the current pric
 
 
 
-Another example:
+## Another example:
 <br/>
 <img width="300" alt="Screen Shot 2023-03-06 at 3 44 54 PM" src="https://user-images.githubusercontent.com/97029819/223227632-2f86f3cc-0ebc-4f2e-ab01-ea555f9cdf3a.png">
 <br/>
