@@ -12,7 +12,7 @@ class API:
         self.api_key:str = file.readline().rstrip() 
         file.close()
 
-    def get_data(self, method:str=None, custum_url:str=None) -> json:
+    def fetch_data(self, method:str=None, custum_url:str=None) -> json:
         try:
             try: 
                 if custum_url: 
@@ -33,24 +33,24 @@ class API:
             print("make sure you created the file <api.txt> and its content is in the right format.") 
 
     def get_income_statement(self) -> json: #
-        return self.get_data(method="income-statement")
+        return self.fetch_data(method="income-statement")
     
     def get_balance_sheet(self) -> json: #
-        return self.get_data(method="balance-sheet-statement")
+        return self.fetch_data(method="balance-sheet-statement")
     
     def get_cash_flow(self) -> json: #
-        return self.get_data(method="cash-flow-statement")
+        return self.fetch_data(method="cash-flow-statement")
 
     # def get_enterprise_value(self) -> json:
-    #     return self.get_data(custum_url="https://financialmodelingprep.com/api/v3/enterprise-values/{}?limit=40&apikey=e508676e6cd038b7bbe3ed9490104dee".format(self.ticker))
+    #     return self.fetch_data(custum_url="https://financialmodelingprep.com/api/v3/enterprise-values/{}?limit=40&apikey={}".format(self.ticker, self.api_key))
     
     def get_info(self) -> json:
-        return self.get_data(method="profile")
+        return self.fetch_data(method="profile")
     
     # def get_ratios(self) -> json:
-    #     return self.get_data("ratios")
+    #     return self.fetch_data("ratios")
 
-    def data(self) -> dict:
+    def get_data(self) -> dict:
         return dict(income_statement=self.get_income_statement(), balance_sheet=self.get_balance_sheet(), cash_flow=self.get_cash_flow(), profile=self.get_info())
     
     

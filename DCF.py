@@ -11,8 +11,9 @@ data = [
     
 class DCF:
     def __init__(self, data, forecast_period, rf_rate=0.05, discount_rate=None, perpertual_gr=0.03, capex_gr=0.01, DnA_gr=0.01, cwc_gr=0.03 ) -> None:
-        # mutable variables
         self.data=data
+        
+        # mutable variables
         self.forecast_period=forecast_period
         self.risk_free_rate=rf_rate
         self.discount_rate=discount_rate
@@ -20,7 +21,11 @@ class DCF:
         self.capex_growth_rate=capex_gr
         self.DnA_growth_rate=DnA_gr
         self.cwc_growth_rate=cwc_gr
-        # 
+
+        self.tax_rate=0.24
+        self.equity_risk_premium=0.02
+        
+        # computed variables
         self.forecasts_table:dict[str, list[float]]= {}
         self.ulFCF_forecast:list=None
         self.perpetual_growth_enterprise_value=None
@@ -32,13 +37,10 @@ class DCF:
         self.intrinsic_equity_value=None
         self.intrinsic_price=None
 
-
-
-        self.tax_rate=0.21
-        self.equity_risk_premium=0.02
-
-        self.tot_capitalization= data["profile"][0]["mktCap"]
-        self.price= data["profile"][0]["price"]
+        self.tot_capitalization=data["profile"][0]["mktCap"]
+        self.price=data["profile"][0]["price"]
+        self.symbol=data["profile"][0]["symbol"]
+        self.name= data["profile"][0]["companyName"]
         self.shares_outstanding= self.tot_capitalization/self.price
         self.tot_debt= data["balance_sheet"][0]["totalDebt"]
         self.tot_equity= data["balance_sheet"][0]["totalEquity"]
@@ -46,8 +48,6 @@ class DCF:
         self.int_expense= data["income_statement"][0]["interestExpense"]
         self.cash:int= data["balance_sheet"][0]["cashAndCashEquivalents"]
 
-        
-    
     def cpt_cost_of_equity(self) -> float:
         return 0.0
     
@@ -122,12 +122,13 @@ class DCF:
 
     def summary(self) -> dict:
         return {
-            "Current price":self.price,
-            "Target price":self.intrinsic_price,
-            "Upside":self.intrinsic_price-self.market_price,
+            "Security":f"{self.symbol}, {self.name}",
+            "Current price":f"$ {self.price}",
+            "Target price":f"$ {round((self.intrinsic_price),2)}",
+            "Upside":f"$ {round((self.intrinsic_price-self.market_price),2)}",
             "Target price Upside": f"{round(((self.intrinsic_price/self.market_price)-1)*100, 2)}%",
             # "Internal Rate of return": 0,
-            "Terminal value": self.intrinsic_equity_value   
+            "Terminal value": int(self.intrinsic_equity_value)   
         }
     def assumptions(self) -> dict:
         return {

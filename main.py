@@ -4,14 +4,14 @@ from visualization import View
 import pandas as pd
 import numpy as np
 
-ticker=API("hd")
-data=ticker.data()
+ticker=API("fklr")
+data=ticker.get_data()
 model=DCF(data, 5)
 model.compute_dcf_model()
 View.series(model.assumptions())
 df = pd.DataFrame(model.forecasts_table.values(),
                     index=model.forecasts_table.keys(),
-                    columns=list(pd.date_range(start="2023", periods=6, freq="Y"))
+                    columns=list(pd.date_range(start="2023", periods=5, freq="Y"))
                     )
 print(df)
 View.series(model.summary())
