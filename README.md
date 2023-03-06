@@ -38,7 +38,7 @@ Here, for DropBox we are estimating an intrinsic value 4% below the current pric
 
 
 Another example:
-<img width="250" alt="Screen Shot 2023-03-06 at 3 44 54 PM" src="https://user-images.githubusercontent.com/97029819/223227632-2f86f3cc-0ebc-4f2e-ab01-ea555f9cdf3a.png">
-<img width="350" alt="Screen Shot 2023-03-06 at 3 45 15 PM" src="https://user-images.githubusercontent.com/97029819/223227653-86a0342d-297a-4aa3-a295-7203f6c69b29.png">
+<img width="250" alt="Screen Shot 2023-03-06 at 3 44 54 PM" src="https://user-images.githubusercontent.com/97029819/223227632-2f86f3cc-0ebc-4f2e-ab01-ea555f9cdf3a.png"><br/>
+<img width="350" alt="Screen Shot 2023-03-06 at 3 45 15 PM" src="https://user-images.githubusercontent.com/97029819/223227653-86a0342d-297a-4aa3-a295-7203f6c69b29.png"><br/>
 <img width="250" alt="Screen Shot 2023-03-06 at 3 45 33 PM" src="https://user-images.githubusercontent.com/97029819/223227679-943953eb-66a9-4b16-a086-f2b81ce0b17e.png">
 
