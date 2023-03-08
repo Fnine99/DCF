@@ -45,3 +45,6 @@ Here, for DropBox we are estimating an intrinsic value 4% below the current pric
 <br/>
 <img width="300" alt="Screen Shot 2023-03-06 at 3 45 33 PM" src="https://user-images.githubusercontent.com/97029819/223227679-943953eb-66a9-4b16-a086-f2b81ce0b17e.png">
 
+### next steps
+-Find and estimate all missing values.
+-Integrate with <a href="https://github.com/Fnine99/QCM"> Quasi-Monte-Carlo</a> to be able to simulate many possible scenarios.
