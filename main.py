@@ -4,7 +4,7 @@ from visualization import View
 import pandas as pd
 import numpy as np
 
-ticker=API("fklr")
+ticker=API("aapl")
 data=ticker.get_data()
 model=DCF(data, 5)
 model.compute_dcf_model()

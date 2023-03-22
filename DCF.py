@@ -10,26 +10,22 @@ data = [
 ]
     
 class DCF:
-    def __init__(self, data, forecast_period, rf_rate=0.05, discount_rate=None, perpertual_gr=0.03, capex_gr=0.01, DnA_gr=0.01, cwc_gr=0.03 ) -> None:
+    def __init__(self, data, forecast_period, discount_rate=None, perpertual_gr=0.0, capex_gr=0.01, DnA_gr=0.01, cwc_gr=0.03 ) -> None:
         self.data=data
-        
+        print(self.data) 
         # mutable variables
         self.forecast_period=forecast_period
-        self.risk_free_rate=rf_rate
         self.discount_rate=discount_rate
         self.perpetual_growth_rate=perpertual_gr
         self.capex_growth_rate=capex_gr
         self.DnA_growth_rate=DnA_gr
         self.cwc_growth_rate=cwc_gr
-
-        self.tax_rate=0.24
-        self.equity_risk_premium=0.02
         
         # computed variables
         self.forecasts_table:dict[str, list[float]]= {}
         self.ulFCF_forecast:list=None
         self.perpetual_growth_enterprise_value=None
-        self.ev_ebitda_enterprise_value=None
+        self.ev_to_ebitda_enterprise_value=None
         self.average_enterprise_value=None
         self.market_enterprise_value=None
         self.market_price=None
@@ -48,6 +44,18 @@ class DCF:
         self.int_expense= data["income_statement"][0]["interestExpense"]
         self.cash:int= data["balance_sheet"][0]["cashAndCashEquivalents"]
 
+        self.ebitda=self.data["income_statement"][0]["ebitda"]
+        self.dep_am=self.data["income_statement"][0]["depreciationAndAmortization"]
+        self.ebit=self.ebitda-self.dep_am
+        self.capex=self.data["cash_flow"][0]["capitalExpenditure"]
+        self.cwc=self.data["cash_flow"][0]["changeInWorkingCapital"]
+
+        self.eff_tax_rate=self.data["income_statement"][0]["incomeTaxExpense"]/self.data["income_statement"][0]["incomeBeforeTax"]
+        self.risk_free_rate=0.05
+        # data["risk_free"][0]["month3"]
+        self.equity_risk_premium=0.07
+        # self.beta*(data["risk_free"][0]["year10"]-0.08)
+
     def cpt_cost_of_equity(self) -> float:
         return 0.0
     
@@ -57,7 +65,7 @@ class DCF:
     def est_wacc_discount_rate(self) -> None:
         cost_of_equity = self.risk_free_rate+self.equity_risk_premium*self.beta
         cost_of_debt = self.int_expense/self.tot_debt
-        after_tax_cost_of_debt = cost_of_debt*(1-self.tax_rate)
+        after_tax_cost_of_debt = cost_of_debt*(1-self.eff_tax_rate)
         debt_to_cap = self.tot_debt/(self.tot_debt+self.tot_equity)
         equity_to_cap = self.tot_equity/(self.tot_debt+self.tot_equity)
         self.discount_rate = round(((after_tax_cost_of_debt*debt_to_cap)+(cost_of_equity*equity_to_cap)), 4)
@@ -78,11 +86,11 @@ class DCF:
         return 0.02
     
     def cpt_ulFCF_forecast(self) -> None:
-        self.forecasts_table["EBITDA"]=[self.data["income_statement"][0]["ebitda"]*((1+self.perpetual_growth_rate)**t) for t in range(self.forecast_period)]
-        self.forecasts_table["Taxes"]=[e*(self.tax_rate) for e in self.forecasts_table["EBITDA"]]
-        self.forecasts_table["D&A"]=[self.data["income_statement"][0]["depreciationAndAmortization"]*((1+self.DnA_growth_rate)**t) for t in range(self.forecast_period)]
-        self.forecasts_table["Capex"]=[self.data["cash_flow"][0]["capitalExpenditure"]*((1+self.capex_growth_rate)**t) for t in range(self.forecast_period)]
-        self.forecasts_table["Change in WC"]=[self.data["cash_flow"][0]["changeInWorkingCapital"]*((1+self.cwc_growth_rate)**t) for t in range(self.forecast_period)]
+        self.forecasts_table["EBITDA"]=[self.ebitda*((1+self.perpetual_growth_rate)**t) for t in range(self.forecast_period)]
+        self.forecasts_table["Taxes"]=[e*(self.eff_tax_rate) for e in self.forecasts_table["EBITDA"]]
+        self.forecasts_table["D&A"]=[self.dep_am*((1+self.DnA_growth_rate)**t) for t in range(self.forecast_period)]
+        self.forecasts_table["Capex"]=[self.capex*((1+self.capex_growth_rate)**t) for t in range(self.forecast_period)]
+        self.forecasts_table["Change in WC"]=[self.cwc*((1+self.cwc_growth_rate)**t) for t in range(self.forecast_period)]
         def cpt_ulFCF(ebit, taxes, DnA, capex, cwc) -> float:
             return ebit-taxes+DnA-capex-cwc
         self.ulFCF_forecast=list(map(cpt_ulFCF, self.forecasts_table["EBITDA"], self.forecasts_table["Taxes"], self.forecasts_table["D&A"], self.forecasts_table["Capex"], self.forecasts_table["Change in WC"]))
@@ -94,12 +102,12 @@ class DCF:
             (self.discount_rate-self.perpetual_growth_rate)
         )
         # print("perp. ev: ", self.perpetual_growth_enterprise_value)
-        ev_ebitda_multiple=self.market_enterprise_value/(self.data["income_statement"][0]["ebitda"])
-        self.ev_ebitda_enterprise_value=ev_ebitda_multiple*(self.forecasts_table["EBITDA"][-1]+self.forecasts_table["D&A"][-1])
-        self.average_enterprise_value=(self.perpetual_growth_enterprise_value+self.ev_ebitda_enterprise_value)/2  ##
+        ev_to_ebitda_multiple=self.market_enterprise_value/(self.data["income_statement"][0]["ebitda"])
+        self.ev_to_ebitda_enterprise_value=ev_to_ebitda_multiple*(self.forecasts_table["EBITDA"][-1]+self.forecasts_table["D&A"][-1])
+        self.average_enterprise_value=(self.perpetual_growth_enterprise_value+self.ev_to_ebitda_enterprise_value)/2  ##
         self.ulFCF_forecast.append(self.average_enterprise_value) ##
         
-        # return self.perpetual_growth_enterprise_value, self.ev_ebitda_enterprise_value, self.average_enterprise_value
+        # return self.perpetual_growth_enterprise_value, self.ev_to_ebitda_enterprise_value, self.average_enterprise_value
 
     def cpt_market_value(self) -> tuple:
         self.market_enterprise_value=self.tot_capitalization+self.tot_debt-self.cash
@@ -135,7 +143,7 @@ class DCF:
             "Wacc used": f"{round((self.discount_rate)*100, 2)}%",
             "Risk-free rate used": f"{round((self.risk_free_rate)*100, 2)}%",
             "Perpetual growth rate used":f"{round((self.perpetual_growth_rate)*100, 2)}%",
-            "Tax rate": f"{round((self.tax_rate)*100, 2)}%",
+            "Tax rate": f"{round((self.eff_tax_rate)*100, 2)}%",
             "Equity risk premium": f"{round((self.equity_risk_premium)*100, 2)}%",
             "Forcast period": int(self.forecast_period),
         }

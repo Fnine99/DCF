@@ -5,6 +5,7 @@ Valuation is as much an art as it is science.
 Subjectivity will always exist; justify your reasoning.
 
 # Discounted cash flow model
+see <a href="https://github.com/Fnine99/Next13-dash" class="underline">web app</a>
 
 note: this model is made using the <a href="https://site.financialmodelingprep.com/developer/docs/">Financial Modeling Prep</a> api.
 

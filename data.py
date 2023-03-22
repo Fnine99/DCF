@@ -1,5 +1,6 @@
 import requests
 import json
+import datetime
 
 class API:
     def __init__(self, ticker:str) -> None:
@@ -16,7 +17,7 @@ class API:
         try:
             try: 
                 if custum_url: 
-                    req = requests.get(custum_url)
+                    req = requests.get(f"{custum_url}&apikey={self.api_key}")
                 else:
                     req = requests.get("{}{}/{}?limit={}&apikey={}"
                         .format(self.base_url, method, self.ticker, self.period, self.api_key))
@@ -47,10 +48,16 @@ class API:
     def get_info(self) -> json:
         return self.fetch_data(method="profile")
     
+    def get_13W(self) -> json:
+        today = datetime.date.today()
+        url="https://financialmodelingprep.com/api/v4/treasury?from={}&to={}".format(today, today)
+        return self.fetch_data(url)
+    
     # def get_ratios(self) -> json:
     #     return self.fetch_data("ratios")
 
     def get_data(self) -> dict:
+        print(self.get_13W())
         return dict(income_statement=self.get_income_statement(), balance_sheet=self.get_balance_sheet(), cash_flow=self.get_cash_flow(), profile=self.get_info())
     
     
